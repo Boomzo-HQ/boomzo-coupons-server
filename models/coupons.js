@@ -32,6 +32,14 @@ const CouponSchema = new Schema(
     }
 );
 
+CouponSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'floaterID',
+        select: 'name img phone address'
+    });
+    next();
+});
+
 const Coupon = model("Coupon", CouponSchema);
 
 module.exports = Coupon;

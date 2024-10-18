@@ -3,6 +3,7 @@ const Coupon = require("../models/coupons");
 const Customer = require("../models/customer");
 const IssuanceRequest = require("../models/issuanceRequest");
 const Vendor = require("../models/vendor");
+const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
@@ -20,7 +21,7 @@ exports.FindVendor = catchAsync(async (id, phone) => {
 exports.VendorLogin = catchAsync(async (req, res, next) => {
   const { phone, password } = req.body;
 
-  if (!email || !password) {
+  if (!phone || !password) {
     return next(new AppError("Please provide email and password!", 400));
   }
   const user = await Vendor.findOne({ phone }).select("+password");

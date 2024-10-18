@@ -12,4 +12,4 @@ router.post("/vendors/:vendorid/issue", CreateIssueRequest);
 // here vendor id is the floating vendor
 router.post("/vendors/:vendorid/redeem", CreateRedeemRequest);
 
-module.exports = router; 
+module.exports = router;

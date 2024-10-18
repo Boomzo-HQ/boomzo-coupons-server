@@ -24,10 +24,12 @@ exports.CreateVendor = catchAsync(async (req, res, next) => {
         password,
     } = req.body;
 
-    const existingVendor = FindVendor("", phone);
+    const existingVendor = await Vendor.findOne({ phone: phone });
 
-    if (existingVendor !== null) {
-        return res.json({ message: "A vendor exist with this phone number" });
+    console.log(existingVendor);
+
+    if (existingVendor) {
+        return res.status(409).json({ message: "A vendor exists with this phone number" });
     }
 
     const createdVendor = await Vendor.create({
@@ -170,11 +172,23 @@ exports.GetActiveCoupons = catchAsync(async (req, res, next) => {
     })
 })
 
-exports.GetVendorCoupons = catchAsync(async (req, res, next) => {
+exports.GetVendorActiveCoupons = catchAsync(async (req, res, next) => {
 
     const vendorID = req.params.vendorid
 
     const coupons = await Coupon.find({ floaterID: vendorID, isCouponActive: true }).sort("-createdAt")
+
+    res.status(200).json({
+        message: "success",
+        coupons,
+    })
+})
+
+exports.GetVendorAllCoupons = catchAsync(async (req, res, next) => {
+
+    const vendorID = req.params.vendorid
+
+    const coupons = await Coupon.find({ floaterID: vendorID }).sort("-createdAt")
 
     res.status(200).json({
         message: "success",

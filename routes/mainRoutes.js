@@ -3,7 +3,6 @@ const AdminRouter = require("./adminRoutes")
 const VendorRouter = require("./vendorRoutes")
 const CustomerRouter = require("./customerRoutes")
 
-
 const router = express.Router();
 
 router.use("/api/v1/admin", AdminRouter);
