@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const { VendorCategory } = require("../utils/categories.js");
 const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
+const VendorCategory = require("../utils/categories");
 
 const VendorSchema = new mongoose.Schema(
     {
@@ -11,12 +11,12 @@ const VendorSchema = new mongoose.Schema(
         address: { type: String, required: true },
         category: {
             type: String,
-            enum: Object.values(VendorCategory),
+            enum: VendorCategory,
             required: true,
         },
         password: { type: String, required: true },
         isFloater: { type: String, default: false },
-        coupons: [{ type: Schema.Types.ObjectId, ref: "Coupon", required: true }],
+        coupons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Coupon", required: true }],
         isDistributingCoupon: { type: Boolean, default: false },
         issuanceLimit: { type: Number },
         isActive: { type: Boolean, default: true },

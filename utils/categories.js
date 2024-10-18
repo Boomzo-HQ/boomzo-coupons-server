@@ -18,4 +18,4 @@ const VendorCategory = {
   Furniture: "Furniture",
 };
 
-module.exports = { VendorCategory }
+module.exports = VendorCategory

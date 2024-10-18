@@ -29,20 +29,13 @@ app.all("*", (req, res, next) => {
 app.use(globalErrorHandler);
 
 
-// Database Connection (using async/await for cleaner syntax)
-async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds if MongoDB is not available
-            socketTimeoutMS: 10000, // Close sockets after 10 seconds of inactivity
-        });
-        console.log("DB connection successful");
-    } catch (err) {
-        console.error("DB connection failed", err);
-        process.exit(1); // Exit process if the database connection fails
-    }
-};
-
+// Mongoose Connection
+mongoose
+    .connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 5000, // 5 seconds
+        socketTimeoutMS: 10000,
+    })
+    .then(() => console.log("DB connection success"));
 
 // Start the server
 const PORT = process.env.PORT || 8000;

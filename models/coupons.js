@@ -1,11 +1,12 @@
-const { Schema, model } = require("mongoose")
+const { Schema, model } = require("mongoose");
+const VendorCategory = require("../utils/categories");
 
 const CouponSchema = new Schema(
     {
         floaterID: { type: Schema.Types.ObjectId, ref: "Vendor", required: true },
         category: {
             type: String,
-            enum: Object.values(VendorCategory),
+            enum: VendorCategory,
             required: true,
         },
         offerTitle: { type: String, required: true },
