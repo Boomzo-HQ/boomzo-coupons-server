@@ -8,6 +8,7 @@
 const Coupon = require("../models/coupons");
 const Customer = require("../models/customer");
 const IssuanceRequest = require("../models/issuanceRequest");
+const Vendor = require("../models/vendor");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const { FindVendor } = require("./vendorController");
@@ -25,7 +26,7 @@ const FindCustomer = catchAsync(async (id, phone) => {
 exports.CreateCustomer = catchAsync(async (req, res, next) => {
     const { name, phone } = req.body;
 
-    const existingCustomer = FindCustomer("", phone);
+    const existingCustomer = await Customer.findOne({ phone: phone })
 
     if (existingCustomer !== null) {
         return res.json({
@@ -72,7 +73,7 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
         });
     }
 
-    const vendor = FindVendor(vendorID);
+    const vendor = await Vendor.findById(vendorID);
 
     if (!vendor) {
         return res.json({
@@ -127,18 +128,41 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     });
 })
 
+// GET /api/vendors/615f9e43784f4a3e24b8c4f8/coupons/615f9e43784f4a3e24b8c4f8
+exports.GetCouponById = catchAsync(async (req, res, next) => {
+    const { vendorid, couponid } = req.params;
+    if (!vendorid || !couponid) {
+        return res.json({
+            message: "Please provide a vendor ID and coupon ID!",
+        });
+    }
+    const coupon = await Coupon.findById(couponid);
+
+    if (!coupon) {
+        return res.json({
+            message: "No coupon exisits with this coupon id!",
+        });
+    }
+    res.json({
+        message: "Coupon found!",
+        coupon,
+    });
+})
+
 // check if coupon is valid
 // check if issuer has valid issue limit (>0)
 exports.CreateIssueRequest = catchAsync(async (req, res, next) => {
     const { customerID, couponID, issuerID, floaterID } = req.body;
+    console.log("Test")
+    console.log(req.body);
 
     if (!customerID) {
         return res.json({
-            message: "Please login in or create your account!",
+            message: "Please login in or create your account! Coustomer ID not valid",
         });
     }
 
-    const customer = FindCustomer(customerID);
+    const customer = await Customer.findById(customerID);
 
     if (!customer) {
         return res.json({
