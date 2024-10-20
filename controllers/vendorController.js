@@ -12,7 +12,7 @@ exports.FindVendor = catchAsync(async (id, phone) => {
   if (phone) {
     return await Vendor.findOne({ phone: phone });
   } else {
-    return await Vendor.findById(id);
+    return `await Vendor.findById(id);`
   }
 })
 
