@@ -143,6 +143,7 @@ exports.CreateCoupon = catchAsync(async (req, res, next) => {
         floaterID,
         {
             $push: { coupons: newCoupon._id },
+            isFloater: true
         },
         { new: true, runValidators: true }
     );

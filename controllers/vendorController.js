@@ -22,7 +22,7 @@ exports.VendorLogin = catchAsync(async (req, res, next) => {
   const { phone, password } = req.body;
 
   if (!phone || !password) {
-    return next(new AppError("Please provide email and password!", 400));
+    return next(new AppError("Please provide phone and password!", 400));
   }
   const user = await Vendor.findOne({ phone }).select("+password");
 
@@ -95,6 +95,16 @@ exports.GetMyIssuanceRequests = catchAsync(async (req, res, next) => {
   const vendorId = req.user._id;
 
   const requests = await IssuanceRequest.find({ issuerID: vendorId }).sort("-createdAt")
+    .populate({
+      path: "customerID",
+      model: "Customer", // Populating Customer details
+      select: "name phone", // Only fetching the name and phone fields
+    })
+    .populate({
+      path: "floaterID",
+      model: "Vendor", // Populating Floater (Vendor) details
+      select: "name img", // Only fetching the name and img fields
+    });
 
   res.status(200).json({
     message: "Success!",

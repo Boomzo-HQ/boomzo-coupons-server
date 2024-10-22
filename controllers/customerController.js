@@ -30,7 +30,8 @@ exports.CreateCustomer = catchAsync(async (req, res, next) => {
 
     if (existingCustomer !== null) {
         return res.json({
-            message: "A account exist with this phone number already!",
+            message: "We found an account with this number!",
+            customer: existingCustomer
         });
     }
 
@@ -39,7 +40,24 @@ exports.CreateCustomer = catchAsync(async (req, res, next) => {
         phone: phone,
     });
 
-    return res.json(createdCustomer);
+    return res.json({
+        message: "New account has been created as there was no existing account with this number!",
+        customer: createdCustomer
+    });
+})
+
+exports.SigninCustomer = catchAsync(async (req, res, next) => {
+    const { phone } = req.body;
+
+    const existingCustomer = await Customer.findOne({ phone: phone })
+
+    if (existingCustomer == null) {
+        return res.json({
+            message: "No account exist with this phone number. Please create an account!",
+        });
+    }
+
+    return res.json(existingCustomer);
 })
 
 exports.GetCustomerCoupons = catchAsync(async (req, res, next) => {
@@ -49,7 +67,13 @@ exports.GetCustomerCoupons = catchAsync(async (req, res, next) => {
         return res.status(400).json({ message: "Phone number is required" });
     }
 
-    const customer = await Customer.findOne({ phone: phone }).populate("coupons");
+    const customer = await Customer.findOne({ phone: phone }).populate({
+        path: 'coupons',
+        populate: {
+            path: 'couponID', // This will populate the `couponID` field inside each `coupon`
+            model: 'Coupon',  // Assuming the Coupon model is what you want to populate
+        },
+    });
 
     if (customer == null) {
         return res.json({
@@ -95,6 +119,7 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     // Query for coupons not matching the vendor's category with pagination
     const coupons = await Coupon.find({
         category: { $ne: vendorCategory },
+        isCouponActive: true,
     })
         .skip(skip)
         .limit(limit);
@@ -121,6 +146,7 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
 
     // Return paginated coupons with metadata
     return res.status(200).json({
+        vendor,
         coupons,
         totalCoupons,
         currentPage: page,
@@ -128,7 +154,8 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     });
 })
 
-// GET /api/vendors/615f9e43784f4a3e24b8c4f8/coupons/615f9e43784f4a3e24b8c4f8
+// GET /api/vendors/615f9e43784f4a3e24b8c4f8/coupons/615f9e43784f4a3e24b8c4f
+// update - inc clicks
 exports.GetCouponById = catchAsync(async (req, res, next) => {
     const { vendorid, couponid } = req.params;
     if (!vendorid || !couponid) {
@@ -136,7 +163,12 @@ exports.GetCouponById = catchAsync(async (req, res, next) => {
             message: "Please provide a vendor ID and coupon ID!",
         });
     }
-    const coupon = await Coupon.findById(couponid);
+    // const coupon = await Coupon.findById(couponid);
+    const coupon = await Coupon.findByIdAndUpdate(
+        couponid,
+        { $inc: { clicks: 1 } },
+        { new: true }
+    );
 
     if (!coupon) {
         return res.json({
@@ -153,7 +185,6 @@ exports.GetCouponById = catchAsync(async (req, res, next) => {
 // check if issuer has valid issue limit (>0)
 exports.CreateIssueRequest = catchAsync(async (req, res, next) => {
     const { customerID, couponID, issuerID, floaterID } = req.body;
-    console.log("Test")
     console.log(req.body);
 
     if (!customerID) {

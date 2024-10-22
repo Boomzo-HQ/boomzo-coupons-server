@@ -16,6 +16,7 @@ const VendorCategory = {
   GiftItemShop: "Gift Item Shop",
   SweetShop: "Sweet Shop",
   Furniture: "Furniture",
+  MarketingAgency: "Marketing Agency",
 };
 
 module.exports = VendorCategory
