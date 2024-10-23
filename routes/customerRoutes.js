@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/signup", CreateCustomer);
 router.post("/my-coupons", GetCustomerCoupons);
-router.get("/vendors/:vendorid/coupons/:couponid", GetCouponById);
+router.get("/coupons/:couponid", GetCouponById);
 
 // here vendor id is the vendor being scanned
 router.get("/vendors/:vendorid/coupons", GetVendorDistributedCoupons);
