@@ -1,10 +1,9 @@
 const express = require("express");
-const { CreateCustomer, GetCustomerCoupons, GetVendorDistributedCoupons, GetCouponById, CreateRedeemRequest, CreateIssueRequest } = require("../controllers/customerController");
+const { CreateCustomer, GetCustomerCoupons, GetVendorDistributedCoupons, GetCouponById, CreateRedeemRequest, CreateIssueRequest, GetIssuanceRequest } = require("../controllers/customerController");
 
 const router = express.Router();
 
 router.post("/signup", CreateCustomer);
-// router.post("/signin", SigninCustomer);
 router.post("/my-coupons", GetCustomerCoupons);
 router.get("/vendors/:vendorid/coupons/:couponid", GetCouponById);
 
@@ -12,7 +11,9 @@ router.get("/vendors/:vendorid/coupons/:couponid", GetCouponById);
 router.get("/vendors/:vendorid/coupons", GetVendorDistributedCoupons);
 
 router.post("/vendors/:vendorid/issue", CreateIssueRequest);
-// here vendor id is the floating vendor
-router.post("/vendors/:vendorid/redeem", CreateRedeemRequest);
+
+// redeem
+router.post("/redeem/:issuanceid", CreateRedeemRequest);
+router.get("/issuance-request/:issuanceid", GetIssuanceRequest);
 
 module.exports = router;
