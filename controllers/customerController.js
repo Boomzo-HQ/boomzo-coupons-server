@@ -81,7 +81,7 @@ exports.GetCustomerCoupons = catchAsync(async (req, res, next) => {
         });
     }
 
-    res.json({
+    res.status(200).json({
         message: "Customer coupons found!",
         customer,
     });
@@ -101,12 +101,18 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
 
     if (!vendor) {
         return res.json({
-            message: "No vendor exisits with this vendor id!",
+            message: "No such boomzo partner exisits!",
+        });
+    }
+
+    if (!vendor.isActive) {
+        return res.json({
+            message: `${vendor.name} has unsubscribed from our services!`,
         });
     }
 
     if (vendor.issuanceLimit <= 0 || !vendor.isDistributingCoupon) {
-        return next(new AppError("The vendor isnt eligible to provide coupons anymore."))
+        return next(new AppError(`${vendor.name} isnt eligible to provide coupons anymore.`))
     }
 
     const vendorCategory = vendor.category;
@@ -118,8 +124,9 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
 
     // Query for coupons not matching the vendor's category with pagination
     const coupons = await Coupon.find({
-        category: { $ne: vendorCategory },
         isCouponActive: true,
+        category: { $ne: vendorCategory },
+        floaterId: { $ne: vendorID },
     })
         .skip(skip)
         .limit(limit);
@@ -142,6 +149,8 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     // Count total matching coupons for pagination
     const totalCoupons = await Coupon.countDocuments({
         category: { $ne: vendorCategory },
+        floaterId: { $ne: vendorID },
+        isCouponActive: true,
     });
 
     // Return paginated coupons with metadata
@@ -222,10 +231,9 @@ exports.CreateIssueRequest = catchAsync(async (req, res, next) => {
 // create redeem request
 exports.CreateRedeemRequest = catchAsync(async (
     req,
-    res,
-    next
+    res
 ) => {
-    const { issuanceID } = req.body;
+    const issuanceID = req.params.issuanceid;
 
     if (!issuanceID) {
         return res.json({
@@ -233,17 +241,48 @@ exports.CreateRedeemRequest = catchAsync(async (
         });
     }
 
-    const updatedIssuanceRequest = await IssuanceRequest.findByIdAndUpdate({
+    const updatedIssuanceRequest = await IssuanceRequest.findByIdAndUpdate(issuanceID, {
         hasAskedRedemption: true
-    });
+    }, { new: true });
 
     if (!updatedIssuanceRequest) {
         return res.json({
-            message: "Couldn't create request! Try again!",
+            message: "Couldn't update request! Try again!",
         });
     }
 
     res.status(200).json({
-        message: "Issue request sent to vendor",
+        message: "Redeem request sent to vendor",
+    });
+})
+
+// get issuance request
+exports.GetIssuanceRequest = catchAsync(async (
+    req,
+    res,
+    next
+) => {
+    const issuanceID = req.params.issuanceid;
+
+    if (!issuanceID) {
+        return res.json({
+            message: "Please login in or create your account!",
+        });
+    }
+
+    const issuanceRequest = await IssuanceRequest.findById(issuanceID)
+        .populate({
+            path: "couponID",
+        })
+
+    if (!issuanceRequest) {
+        return res.json({
+            message: "Couldn't update request! Try again!",
+        });
+    }
+
+    res.status(200).json({
+        message: "success",
+        issuanceRequest
     });
 })
