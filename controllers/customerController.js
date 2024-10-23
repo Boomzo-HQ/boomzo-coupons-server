@@ -166,8 +166,8 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
 // GET /api/vendors/615f9e43784f4a3e24b8c4f8/coupons/615f9e43784f4a3e24b8c4f
 // update - inc clicks
 exports.GetCouponById = catchAsync(async (req, res, next) => {
-    const { vendorid, couponid } = req.params;
-    if (!vendorid || !couponid) {
+    const { couponid } = req.params;
+    if (!couponid) {
         return res.json({
             message: "Please provide a vendor ID and coupon ID!",
         });
