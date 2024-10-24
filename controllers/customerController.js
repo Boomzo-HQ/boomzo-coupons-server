@@ -128,38 +128,54 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
         category: { $ne: vendorCategory },
         floaterId: { $ne: vendorID },
     })
-        .skip(skip)
-        .limit(limit);
+    // .skip(skip)
+    // .limit(limit);
 
     if (coupons.length === 0) {
         return res.status(404).json({ message: "No coupons found." });
     }
 
     // Increment impressions for the queried coupons
-    await Promise.all(
-        coupons.map((coupon) =>
-            Coupon.findByIdAndUpdate(
-                coupon._id,
-                { $inc: { impressions: 1 } },
-                { new: true }
-            )
-        )
-    );
+    // await Promise.all(
+    //     coupons.map((coupon) =>
+    //         Coupon.findByIdAndUpdate(
+    //             coupon._id,
+    //             { $inc: { impressions: 1 } },
+    //             { new: true }
+    //         )
+    //     )
+    // );
 
     // Count total matching coupons for pagination
-    const totalCoupons = await Coupon.countDocuments({
-        category: { $ne: vendorCategory },
-        floaterId: { $ne: vendorID },
-        isCouponActive: true,
-    });
+    // const totalCoupons = await Coupon.countDocuments({
+    //     category: { $ne: vendorCategory },
+    //     floaterId: { $ne: vendorID },
+    //     isCouponActive: true,
+    // });
 
     // Return paginated coupons with metadata
-    return res.status(200).json({
+    res.status(200).json({
         vendor,
         coupons,
-        totalCoupons,
-        currentPage: page,
-        totalPages: Math.ceil(totalCoupons / limit),
+        // totalCoupons,
+        // currentPage: page,
+        // totalPages: Math.ceil(totalCoupons / limit),
+    });
+
+    setImmediate(async () => {
+        try {
+            await Promise.all(
+                coupons.map((coupon) =>
+                    Coupon.findByIdAndUpdate(
+                        coupon._id,
+                        { $inc: { impressions: 1 } },
+                        { new: true }
+                    )
+                )
+            );
+        } catch (error) {
+            console.error("Error updating impressions:", error);
+        }
     });
 })
 
