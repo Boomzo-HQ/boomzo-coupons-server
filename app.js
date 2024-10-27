@@ -12,7 +12,7 @@ const app = express();
 
 // CORS
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://partners.boomzo.in/', 'https://coupons.boomzo.in/'],
     credentials: true,
     optionSuccessStatus: 200
 }
