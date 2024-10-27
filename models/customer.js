@@ -5,6 +5,7 @@ const CustomerSchema = new Schema(
     {
         name: { type: String, required: true },
         phone: { type: String, required: true },
+        pin: { type: String, required: true },
         coupons: [
             {
                 type: Schema.Types.ObjectId,
@@ -17,6 +18,7 @@ const CustomerSchema = new Schema(
         toJSON: {
             transform(doc, ret) {
                 delete ret.__v;
+                delete ret.pin;
             },
         },
         timestamps: true,

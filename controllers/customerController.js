@@ -11,22 +11,12 @@ const IssuanceRequest = require("../models/issuanceRequest");
 const Vendor = require("../models/vendor");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
-const { FindVendor } = require("./vendorController");
-
-// helper function
-const FindCustomer = catchAsync(async (id, phone) => {
-    if (phone) {
-        return await Customer.findOne({ phone: phone });
-    } else {
-        return await Customer.findById(id);
-    }
-})
 
 
 exports.CreateCustomer = catchAsync(async (req, res, next) => {
-    const { name, phone } = req.body;
+    const { name, phone, pin } = req.body;
 
-    const existingCustomer = await Customer.findOne({ phone: phone })
+    const existingCustomer = await Customer.findOne({ phone: phone, pin: pin })
 
     if (existingCustomer !== null) {
         return res.json({
@@ -38,6 +28,7 @@ exports.CreateCustomer = catchAsync(async (req, res, next) => {
     const createdCustomer = await Customer.create({
         name: name,
         phone: phone,
+        pin: pin
     });
 
     return res.json({
@@ -90,6 +81,7 @@ exports.GetCustomerCoupons = catchAsync(async (req, res, next) => {
 // GET /api/vendors/615f9e43784f4a3e24b8c4f8/coupons?page=2
 exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     const vendorID = req.params.vendorid;
+    const categoryFilter = req.query.category;
 
     if (!vendorID) {
         return res.json({
@@ -122,18 +114,26 @@ exports.GetVendorDistributedCoupons = catchAsync(async (req, res, next) => {
     const limit = 6; // Limit to 6 coupons per load
     const skip = (page - 1) * limit; // Calculate the number of documents to skip
 
-    // Query for coupons not matching the vendor's category with pagination
-    const coupons = await Coupon.find({
+    const query = {
         isCouponActive: true,
         category: { $ne: vendorCategory },
         floaterId: { $ne: vendorID },
-    })
+    };
+
+
+    if (categoryFilter) {
+        query.category = categoryFilter;
+    }
+
+
+    // Query for coupons not matching the vendor's category with pagination
+    const coupons = await Coupon.find(query)
     // .skip(skip)
     // .limit(limit);
 
-    if (coupons.length === 0) {
-        return res.status(404).json({ message: "No coupons found." });
-    }
+    // if (coupons.length === 0) {
+    //     return res.status(404).json({ message: "No coupons found." });
+    // }
 
     // Increment impressions for the queried coupons
     // await Promise.all(

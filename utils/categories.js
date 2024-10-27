@@ -1,23 +1,10 @@
 const VendorCategory = {
-  HotelRestaurant: "Hotel/Restaurant",
-  Cafe: "Cafe",
-  Tiles: "Tiles",
-  GeneralStore: "General Store",
-  ShoppingMall: "Shopping Mall",
-  Medicine: "Medicine",
-  HealthCheckupUnit: "Health Checkup Unit",
+  CafeRestaurant: "Cafe/Restaurant",
   Salon: "Salon",
-  BeautyParlor: "Beauty Parlor",
-  Gyms: "Gyms",
-  AutomobileRepair: "Automobile Repair",
-  ShoesStore: "Shoes Store",
-  KidsClothesShoes: "Kids Clothes & Shoes",
-  VideoPhotoShoot: "Video/Photo Shoot",
-  GiftItemShop: "Gift Item Shop",
-  SweetShop: "Sweet Shop",
-  Furniture: "Furniture",
   MarketingAgency: "Marketing Agency",
-  Jewellers: "Jewellers",
+  GiftShop: "Gift Shop",
+  Furniture: "Furniture",
+  Kitchen: "Kitchen"
 };
 
 module.exports = VendorCategory
