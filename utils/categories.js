@@ -7,7 +7,8 @@ const VendorCategory = {
   Kitchen: "Kitchen",
   Jeweller: "Jeweller",
   Fashion: "Fashion",
-  // eyeware
+  Eyewear: "Eyewear",
+  Caterer: "Caterer",
   // acessories
   // electronics
 };
