@@ -4,7 +4,12 @@ const VendorCategory = {
   MarketingAgency: "Marketing Agency",
   GiftShop: "Gift Shop",
   Furniture: "Furniture",
-  Kitchen: "Kitchen"
+  Kitchen: "Kitchen",
+  Jeweller: "Jeweller",
+  Fashion: "Fashion",
+  // eyeware
+  // acessories
+  // electronics
 };
 
 module.exports = VendorCategory

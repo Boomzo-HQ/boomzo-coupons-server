@@ -13,13 +13,12 @@ const app = express();
 // CORS
 const corsOptions = {
     origin: ['http://localhost:3000', 'http://localhost:3001', 'https://partners.boomzo.in', 'https://coupons.boomzo.in'],
-    credentials: true, // Allows the server to accept cookies from the client
-    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'] // Add any headers you are using in your app
+    credentials: true,
+    optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }
 app.use(cors(corsOptions));
-// app.use(cors());
 app.use(express.json({ limit: "10kb" }));
 
 
